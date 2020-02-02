@@ -1,0 +1,32 @@
+<form class="layui-form" id="form">
+	<#if programs??&&programs.programId??>
+		<input type="hidden" id="programId" name="programId" value="${(programs.programId)!}"  autocomplete="off" class="layui-input">
+		<input type="hidden" id="programStatus" name="programStatus"  value="${(programs.programStatus)!}"   autocomplete="off" class="layui-input">
+	<#else>
+		<input type="hidden" id="programStatus" name="programStatus"  value="1" autocomplete="off" class="layui-input">
+	</#if>
+  <div class="layui-form-item">
+    <label class="layui-form-label">标题</label>
+    <div class="layui-input-block">
+      <input type="text" id="programTitle" name="programTitle" value="${(programs.programTitle)!}"placeholder="请输入标题" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">内容</label>
+    <div class="layui-input-block">
+      <textarea name="programContent" placeholder="请输入内容" class="layui-textarea">${(programs.programContent)!}</textarea>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">备注</label>
+    <div class="layui-input-block">
+      <input type="text" id="programComment" name="programComment" value="${(programs.programComment)!}" placeholder="请输入备注" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+</form>
+<script>
+layui.use('form', function(){
+  var form = layui.form;
+  form.render();
+});
+</script>

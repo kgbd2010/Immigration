@@ -1,0 +1,131 @@
+<div class="layuimini-container layui-anim layui-anim-upbit">
+    <div class="layuimini-main">
+		<button class="layui-btn" type="button" onclick="edit();" class="btn btn-success">新增</button>
+        <table class="layui-hide" id="table" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+			{{# if(d.programStatus == 1){ }}
+				<a class="layui-btn layui-btn-xs" lay-event="edit" onclick="fabu('{{d.programId}}')">发布</a>
+			{{# }else { }}
+				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" onclick="cexiao('{{d.programId}}')">撤销</a>
+			{{# } }}
+            <a class="layui-btn layui-btn-xs" lay-event="edit" onclick="edit('{{d.programId}}')">编辑</a>
+  			<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" onclick="dell('{{d.programId}}')">删除</a>
+        </script>
+    </div>
+</div>
+
+<script>
+var form,table;
+layui.use(['form','table'], function(){
+  table = layui.table;
+  form = layui.form;
+	//第一个实例
+  table.render({
+    elem: '#table'
+    ,url: '/programs/list' //数据接口
+    ,page: true //开启分页
+    ,cols: [[ //表头z
+      {type: 'numbers', title: '序号', width:80}
+      ,{field: 'programTitle', title: '标题'}
+      ,{field: 'programContent', title: '项目内容'}
+      ,{field: 'programComment', title: '项目备注'}
+      ,{field: 'programStatus', title: '状态',templet:  function(d){
+    	  if(d.programStatus==1){
+    		  return '待发布';
+    	  }else if(d.programStatus==2){
+    		  return '已发布';
+    	  }
+        return '';
+      }}
+      ,{title: '操作',toolbar: '#currentTableBar', width:250}
+    ]]
+  });
+//监听事件
+  table.on('toolbar(currentTableFilter)', function(obj){
+    alert();
+  });
+	
+});
+var dell = function(id){
+	if(confirm(" 确定删除吗？")){
+		$.ajax({
+			url:'/programs/dell',
+			type:'POST',
+			dataType:'json',
+			data:{id:id},
+			success:function(obj){
+				alert(obj.message);
+				if(obj.success){
+					table.reload('table',null);
+				}
+			}
+		});
+	}
+}
+var fabu = function(id){
+	if(confirm("确定发布吗？")){
+		$.ajax({
+			url:'/programs/status',
+			type:'POST',
+			dataType:'json',
+			data:{id:id,status:2},
+			success:function(obj){
+				alert(obj.msg);
+				if(obj.code==0){
+					table.reload('table',null);
+					layer.close(index);
+				}
+			}
+		});
+	}
+}
+var cexiao = function(id){
+	if(confirm("确定撤销发布吗？")){
+		$.ajax({
+			url:'/programs/status',
+			type:'POST',
+			dataType:'json',
+			data:{id:id,status:1},
+			success:function(obj){
+				alert(obj.msg);
+				if(obj.code==0){
+					table.reload('table',null);
+					layer.close(index);
+				}
+			}
+		});
+	}
+}
+var edit = function(id){
+	$.ajax({
+		url:'/programs/edit',
+		type:'get',
+		dataType:'html',
+		data:{id:id},
+		success:function(obj){
+			layer.open({
+			  title: "编辑",
+			  area: ['500px', '450px'],
+			  content:obj,
+			  yes: function(index, layero){
+				  $.ajax({
+					url:'/programs/save',
+					type:'POST',
+					dataType:'json',
+					data:$("#form").serialize(),
+					success:function(obj){
+						alert(obj.msg);
+						if(obj.code==0){
+							table.reload('table',null);
+							layer.close(index);
+						}
+					}
+				});
+			    layer.close(index);
+			  }
+			});
+		}
+	});
+}
+</script>
